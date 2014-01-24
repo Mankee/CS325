@@ -9,12 +9,39 @@ public class Main {
                                5, 34, -36, -9, 16, -31, -7, -24, -47, -14, -16, -18, 39, -30, 33, -45, -38, 41, -3, 4,
                                -25, 20, -35, 32, 26, 47, 2, -4, 8, 9, 31, -28, 36, 1, -21, 30, 43, 25, -20, -42};
 
-        System.out.println("test");
+        //first algorithm
+        int beginningIndex;
+        int endingIndex;
+        int subArraySum;
+        int finalSum;
 
-        int finalSum = fullArray[0];
+        finalSum = fullArray[0];
+        beginningIndex = 0;
         for (int i = 0; i < fullArray.length; i++) {
-            int subArraySum = 0;
+            endingIndex = i;
             for (int j = i; j < fullArray.length; j++) {
+
+                //loop over each pair of indices to find the sum of of the sub array
+                subArraySum = 0;
+                for (int k = beginningIndex; k <= endingIndex; k++) {
+                    subArraySum = subArraySum + fullArray[k];
+                }
+
+                if (subArraySum > finalSum) {
+                    finalSum = subArraySum;
+                }
+                endingIndex++;
+            }
+            beginningIndex++;
+        }
+        System.out.println(finalSum);
+
+        //Second Algorithm
+        finalSum = fullArray[0];
+        for (int i = 0; i < fullArray.length; i++) {
+            subArraySum = 0;
+            for (int j = i; j < fullArray.length; j++) {
+                //rather than recalculate the sum each time, just use previous subArraySum j-1 for O(1)
                 subArraySum = subArraySum + fullArray[j];
                 if (subArraySum > finalSum) {
                     finalSum = subArraySum;
