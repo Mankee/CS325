@@ -1,4 +1,4 @@
-/* Project: #1 MaxSubArray
+/* Project: #2 DP
  *
  * Team RADZ:
  *  Rittie Chuaprasert (chuaprar)
@@ -18,9 +18,6 @@
 * with user input. */
 #define TEST_TIMING
 //#define TEST_RESULTS
-
-/* Use 1 to test algorithm 1, 2 to test algorithm 2, etc. */
-#define ALGORITHM 3
 
 #ifdef TEST_TIMING
 #include <time.h>
@@ -51,42 +48,12 @@ int main(int argc, char* argv[])
     };
 
     for (i = 0; i < 10; i++)
-    {
-
-        if (ALGORITHM == 1)
-        {
-            if(tAns[i] == a1_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i]))
-            {
-                printf("Algorithm 1 %d with answer %d passed.\n", i + 1, tAns[i]);
-            }
-            else
-            {
-                printf("Algorithm 1 %d with answer %d FAILED.\n", i + 1, tAns[i]);
-            }
+    {  
+        if (tAns[i] == a3_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i])) {
+            printf("Algorithm 3 %d with answer %d passed.\n", i + 1, tAns[i]);
+        } else {
+            printf("Algorithm 3 %d with answer %d FAILED.\n", i + 1, tAns[i]);
         }
-        else if (ALGORITHM == 2)
-        {
-            if(tAns[i] == a2_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i]))
-            {
-                printf("Algorithm 2 %d with answer %d passed.\n", i + 1, tAns[i]);
-            }
-            else
-            {
-                printf("Algorithm 2 %d with answer %d FAILED.\n", i + 1, tAns[i]);
-            }
-        }
-        else if (ALGORITHM == 3)
-        {
-            if(tAns[i] == a3_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i]))
-            {
-                printf("Algorithm 3 %d with answer %d passed.\n", i + 1, tAns[i]);
-            }
-            else
-            {
-                printf("Algorithm 3 %d with answer %d FAILED.\n", i + 1, tAns[i]);
-            }
-        }
-
     }
 #endif
 
@@ -97,56 +64,26 @@ int main(int argc, char* argv[])
     int arraySizes [] = {100,200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000};
     struct timeval t1,t2;
 
-    //print a header
-    if (ALGORITHM == 1)
-    {
-        printf("Algorithm 1 \n");
-    }
-    else if (ALGORITHM == 2)
-    {
-        printf("Algorithm 2 \n");
-    }
-    else
-    {
-        printf("Algorithm 3 \n");
-    }
+    printf("Recursive Divide and Conqure \n");
+    
 
-    for(j=0; j< testNumber; j++)
-    {
+    for(j=0; j< testNumber; j++) {
         n = arraySizes[j];
-        if(n > 1)
-        {
-
+        if(n > 1) {
             int array[n];
             double totalTime = 0;
 
-
             //fill array with random bits
-            for(i = 0; i < n; i++)
-            {
+            for(i = 0; i < n; i++) {
                 array[i] = rand() % 201 + (-100);
                 /*printf("array[i] = %d\n", array[i]);*/
             }
-
 
             /* Run 10 times to smooth out any noise */
             for(i = 1; i <= 10; i++)
             {
                 gettimeofday(&t1,NULL);
-
-                if (ALGORITHM == 1)
-                {
-                    a1_maxsubarray(n,array);
-                }
-                else if (ALGORITHM == 2)
-                {
-                    a2_maxsubarray(n,array);
-                }
-                else if (ALGORITHM == 3)
-                {
-                    a3_maxsubarray(n,array);
-                }
-
+                a3_maxsubarray(n,array);
                 gettimeofday(&t2,NULL);
 
                 totalTime += ((10000000 * t2.tv_sec + t2.tv_usec) - (10000000 * t1.tv_sec + t1.tv_usec));
@@ -154,8 +91,8 @@ int main(int argc, char* argv[])
 
             totalTime /= 10;
 
-            //printf("Running time of Algorithm %d = %g ms\n", ALGORITHM, totalTime);
-            printf("%g \n", totalTime);
+            //printf("Running time of Algorithm %d = %g us\n", ALGORITHM, totalTime);
+            printf("%g us \n", totalTime);
             /* END: Timing */
         }
     }

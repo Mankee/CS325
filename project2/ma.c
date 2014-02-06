@@ -1,4 +1,5 @@
-/* Project: #1 MaxSubArray
+
+/* Project: #2 DP
  *
  * Team RADZ:
  *  Rittie Chuaprasert (chuaprar)
@@ -12,43 +13,6 @@
 */
 
 #include "ma.h"
-
-/* Algorithm 1 for MaxSubArray */
-int a1_maxsubarray(int a_size, int a[]) 
-{
-
-	int i, j, temp = 0,  max = 0;
-
-	/* Outer loop */
-	for(i = 0; i < a_size; i++){
-		/* Inner loop */
-		for(j = i; j < a_size; j++){	
-			temp += a[j];
-			if(temp > max)
-				max = temp;
-			}
-		temp = 0;
-	}
-	
-	return max;
-
-}
-
-/* Algorithm 2 for MaxSubArray */
-int a2_maxsubarray(int a_size, int a[])
-{
-
-	int i, max = a[0], temp = a[0];
-
-	for (i = 1; i < a_size; i++)
-	{
-		temp = (a[i] > temp + a[i]? a[i] : temp + a[i]);
-		max = (max > temp? max : temp);
-	}
-
-	return max;
-
-}
 
 
 /* Algorithm 3 for MaxSubArray */
