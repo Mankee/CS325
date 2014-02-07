@@ -1,4 +1,4 @@
-# Project: #1 MaxSubArray
+# Project: #2 Dynamic Programming
 #
 # Team RADZ:
 #  Rittie Chuaprasert (chuaprar)
@@ -20,15 +20,15 @@
 CC=gcc
 DEBUG=-g
 CFLAGS=$(DEBUG) -Wall
-PROGS=prj1
+PROGS=prj2
 
 all: $(PROGS)
 
-prj1: ma.o
-	$(CC) $(CFLAGS) -o prj1 ma.o main.c
+prj2: dp.o
+	$(CC) $(CFLAGS) -o prj2 dp.o main.c
 
-ma.o: ma.c ma.h
-	$(CC) $(CFLAGS) -c ma.c
+dp.o: dp.c dp.h
+	$(CC) $(CFLAGS) -c dp.c
 
 clean:
 	rm -f $(PROGS) *.o *~
