@@ -1,4 +1,4 @@
-/* Project: #2 DP
+/* Project: #2 Dynamic Programming
  *
  * Team RADZ:
  *  Rittie Chuaprasert (chuaprar)
@@ -11,13 +11,13 @@
  * 
 */
 
-#include "ma.h"
+#include "dp.h"
 #include <stdio.h>
 
 /* Comment out the following line to test the algorithm
 * with user input. */
-#define TEST_TIMING
-//#define TEST_RESULTS
+//#define TEST_TIMING
+#define TEST_RESULTS
 
 #ifdef TEST_TIMING
 #include <time.h>
@@ -48,11 +48,14 @@ int main(int argc, char* argv[])
     };
 
     for (i = 0; i < 10; i++)
-    {  
-        if (tAns[i] == a3_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i])) {
-            printf("Algorithm 3 %d with answer %d passed.\n", i + 1, tAns[i]);
-        } else {
-            printf("Algorithm 3 %d with answer %d FAILED.\n", i + 1, tAns[i]);
+    {
+        if(tAns[i] == dp_maxsubarray(sizeof(tArrs[i])/sizeof(tArrs[i][0]),tArrs[i]))
+        {
+            printf("Dynamic Programming %d with answer %d passed.\n", i + 1, tAns[i]);
+        }
+        else
+        {
+            printf("Dynamic Programming %d with answer %d FAILED.\n", i + 1, tAns[i]);
         }
     }
 #endif
@@ -64,35 +67,39 @@ int main(int argc, char* argv[])
     int arraySizes [] = {100,200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000};
     struct timeval t1,t2;
 
-    printf("Recursive Divide and Conqure \n");
-    
+    //print a header
+    printf("Dynamic Programming \n");
 
-    for(j=0; j< testNumber; j++) {
+    for(j=0; j< testNumber; j++)
+    {
         n = arraySizes[j];
-        if(n > 1) {
+        if(n > 1)
+        {
+
             int array[n];
             double totalTime = 0;
 
+
             //fill array with random bits
-            for(i = 0; i < n; i++) {
+            for(i = 0; i < n; i++)
+            {
                 array[i] = rand() % 201 + (-100);
                 /*printf("array[i] = %d\n", array[i]);*/
             }
+
 
             /* Run 10 times to smooth out any noise */
             for(i = 1; i <= 10; i++)
             {
                 gettimeofday(&t1,NULL);
-                a3_maxsubarray(n,array);
+                dp_maxsubarray(n,array);
                 gettimeofday(&t2,NULL);
 
                 totalTime += ((10000000 * t2.tv_sec + t2.tv_usec) - (10000000 * t1.tv_sec + t1.tv_usec));
             }
 
             totalTime /= 10;
-
-            //printf("Running time of Algorithm %d = %g us\n", ALGORITHM, totalTime);
-            printf("%g us \n", totalTime);
+            printf("%g \n", totalTime);
             /* END: Timing */
         }
     }
