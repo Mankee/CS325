@@ -13,15 +13,14 @@
 
 #include "dp.h"
 
-#define MIN_INT -2147483648
-
 int dp_maxsubarray(int a_size, int a[]) 
 {
-	int i, max = MIN_INT, curr = 0, max_array[a_size];
+	int i, max, curr = 0, max_array[a_size];
 	
 	if (a_size > 0)
 	{
 		max_array[0] = a[0];
+		max = a[0];
 	
 		/* Fill the max array */
 		for(i = 1; i < a_size; i++)
@@ -31,15 +30,11 @@ int dp_maxsubarray(int a_size, int a[])
 		}
 		
 		/* Find the maximum value */
-		for(i = 0; i < a_size; i++)
-		{
+		for(i = 1; i < a_size; i++)
 			max = (max > max_array[i] ? max : max_array[i]); 
-		
-		}
 	}
 	else
 		max = 0;
 		
 	return max;
 }
-
