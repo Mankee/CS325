@@ -38,6 +38,7 @@ def find_tour():
 #######################Now we start to play with the distances here#################################
 
 
+
     cityAdjacency = []
     for x in range(len(cityList) -1):
         for y in range(x+1, len(cityList)):
