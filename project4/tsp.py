@@ -45,6 +45,7 @@ def find_tour():
             cityAdjacency.append((x,y,getCityDistance(cityList, x, y)))
 
 
+
     print len(cityAdjacency)
 # write output to file
     filename = filename + '.tour'
