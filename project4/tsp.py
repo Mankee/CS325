@@ -31,7 +31,7 @@ def calc_dist(x1,y1,x2,y2):
 	else:
 		#round to the nearest integer. 
 		#For 0.1, put a one, then for 0.01 put 2, etc. negative values work in the other direction
-		return round(math.sqrt(math.pow((x1 - x2),2) + math.pow((y1 - y2),2)),0)
+		return round(math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)),0)
 
 # function to build the initial sub-optimal tour
 def find_short_path(fromCity):
@@ -69,24 +69,27 @@ def output()
 # basic routine to optimize tour length by cycling through a number of 2-opt swaps and array reversals
 def optimize_tour():
 	global visited
+	global tourLength
+
 	tour_size = len(visited)
+	prev_tour_length = 0
 
-	visited.reverse()
-
-	for cycle in range(10):
-		#print "------------------------- CYCLE", cycle, "------------------------------"
+	for cycle in range(20):
+		if (tour_size == cityCount):
+			print "------------------------- CYCLE", cycle, "------------------------------"
+		visited.reverse()
 		for i in range(2, tour_size-1):
+			if (i % 250 == 0):
+				print "======= TOUR STOP", i, "of", tour_size-1, "========="
+				tour_distance_check()
 			for j in range(i, tour_size-1):
 				opt_swap(visited[i-2], visited[i-1], visited[j], visited[j+1])
 
-	visited.reverse()
-
-	for cycle in range(10):
-		#print "------------------------- CYCLE", cycle, "------------------------------"
-		for i in range(2, tour_size-1):
-			for j in range(i, tour_size-1):
-				opt_swap(visited[i-2], visited[i-1], visited[j], visited[j+1])
-
+		if (len(visited)==cityCount):
+			tour_distance_check()
+			if (tourLength == prev_tour_length):
+				break
+			prev_tour_length = tourLength
 
 # calculates the tour length given the current visited[] array.  Outputs city count and tour length.
 def tour_distance_check():
