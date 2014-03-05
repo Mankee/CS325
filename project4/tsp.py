@@ -85,7 +85,7 @@ def optimize_tour():
 			for j in range(i, tour_size-1):
 				opt_swap(visited[i-2], visited[i-1], visited[j], visited[j+1])
 
-		if (len(visited)==cityCount):
+		if (tour_size == cityCount):
 			tour_distance_check()
 			if (tourLength == prev_tour_length):
 				break
