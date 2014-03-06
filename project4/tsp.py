@@ -17,7 +17,6 @@ visited = []
 filename = ''
 tourLength = 0
 startCity = 15
-intervals = 10
 
 # The signal handler. On receiving sigterm, it writes
 # the latest result to the file.
@@ -51,7 +50,7 @@ def find_short_path(fromCity):
 	return tourCity
 
 # function to output the visited tour file
-def output()
+def output():
 	global visited
 	global tourLength
 	global filename
@@ -153,7 +152,7 @@ def opt_swap(A, B, C, D):
 	new_edge1  = calc_dist(cityList[A][0], cityList[A][1], cityList[C][0], cityList[C][1])
 	new_edge2  = calc_dist(cityList[B][0], cityList[B][1], cityList[D][0], cityList[D][1])
 	if (orig_edge1 + orig_edge2 > new_edge1 + new_edge2):
-		print "********** swapping [", A, B, "] and [", C, D,"] **********"
+		#print "********** swapping [", A, B, "] and [", C, D,"] **********"
 		#print "AB:", orig_edge1, "CD:", orig_edge2, "total:", orig_edge1 + orig_edge2 
 		#print "AC:", new_edge1, "BD:", new_edge2, "total:", new_edge1 + new_edge2 
 		idxB = visited.index(B)
@@ -166,19 +165,24 @@ def opt_swap(A, B, C, D):
 		visited = slice_beg + slice_mid + slice_end
 		#print visited
 
-		tour_distance_check()
+		#tour_distance_check()
 
 # procedure to parse the input file, initialize the visited array, and optimize the tour
 def find_tour():
+
+# < Initializations > ------------------------------------------------
+
 	global filename
 	global cityList
 	global cityCount
 	global visited
 	global tourLength
 	global startCity
-	global intervals
+	fout = 0	# no longer needed
 	distance = 0
 	tourCity = 0
+
+	# variables to characterize city coordinate ranges
 	x_max = 0
 	y_max = 0
 	x_min = 100000000
@@ -186,130 +190,153 @@ def find_tour():
 	x_step = 0
 	y_step = 0
 	x_idx = 0
-	y_idx = 0	
-	
-	mini_vis = [[0 for x in xrange(intervals*intervals)] for x in xrange(1000)]
+	y_idx = 0
+	intervals = 0	# chessboard squares per side of (intervals x intervals) chessboard
 
+	# variables to hold the current best solution during run time
+	bestLength = 1000000000
+	bestTour = []	
+
+	# initialize cityList array
 	with open(filename) as f:
 		for line in f:
 			cityList.append(map(int, line.strip().split()[1:3]))
 
-	#get the count of cities
+	# get the count of cities
 	cityCount = len(cityList)
-
-	# get x and y max and min
-	for i in range(cityCount):
-		if (cityList[i][0] > x_max):
-			x_max = cityList[i][0]
-		elif (cityList[i][0] < x_min):
-			x_min = cityList[i][0]
-
-		if (cityList[i][1] > y_max):
-			y_max = cityList[i][1]
-		elif (cityList[i][1]) < y_min:
-			y_min = cityList[i][1]
-		#visited.append(i)
-
-	print x_min, x_max, y_min, y_max, "cityCount:", cityCount
-	x_step = (x_max - x_min)/intervals + 1
-	y_step = (y_max - y_min)/intervals + 1
 	
-	for i in range(intervals):
-		for j in range(intervals):
-			mini_vis[i*intervals + j] = []
+# < Run time section > ------------------------------------------------
 
-	for i in range(cityCount):
-		x_idx = (cityList[i][0] - x_min) / x_step
-		y_idx = (cityList[i][1] - y_min) / y_step
-		#print x_idx, y_idx		
-		mini_vis[x_idx*intervals + y_idx].append(i)
+	# adjust starting interval number (default = 100) and define multi-run loop parameters
+	intervals_first = 100
+	intervals_last = 102
+	if (cityCount < 100):
+		intervals_first = 2
+		intervals_last = 102
+	elif (cityCount < 300):
+		intervals_first = 2
+		intervals_last = 102
+	elif (cityCount < 1000):
+		intervals_first = 8
+		intervals_last = 52
 
-	for i in range(intervals):
-		for j in range(intervals):
-			print i, j, "count:", len(mini_vis[i*intervals + j])
-			#print mini_vis[i*intervals + j]
+	# execute specified number of runs; cover range of chessboard dimensions, if applicable
+	for intervals in range(intervals_first, intervals_last, 2):
 
-	# determine the order of the tour as it hops mini-segments
-	tour_order = []
-	curr_idx = 0
-	for i in range(intervals):
-		tour_order += [i*intervals]
+		print "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHESSBOARD", intervals, "x", intervals, ">>>>>>>>>>"
 
-	curr_idx = intervals * (intervals-1)
-	for i in range(intervals-1):
-		curr_idx += 1
-		tour_order += [curr_idx]
+		# declare mini-arrays for cities located in each chessboard square 
+		mini_vis = [[0 for x in xrange(intervals*intervals)] for x in xrange(intervals*intervals)]
 
-	curr_idx -= intervals
+		# get x and y max and min
+		for i in range(cityCount):
+			if (cityList[i][0] > x_max):
+				x_max = cityList[i][0]
+			elif (cityList[i][0] < x_min):
+				x_min = cityList[i][0]
 
-	for loop in range(intervals/2 - 1):
+			if (cityList[i][1] > y_max):
+				y_max = cityList[i][1]
+			elif (cityList[i][1]) < y_min:
+				y_min = cityList[i][1]
+
+		# define dimensions of chessboard squares
+		x_step = (x_max - x_min)/intervals + 1
+		y_step = (y_max - y_min)/intervals + 1
+	
+		for i in range(intervals):
+			for j in range(intervals):
+				mini_vis[i*intervals + j] = []
+
+		for i in range(cityCount):
+			x_idx = (cityList[i][0] - x_min) / x_step
+			y_idx = (cityList[i][1] - y_min) / y_step
+			mini_vis[x_idx*intervals + y_idx].append(i)
+
+		# Apply Chessboard tour algorithm to determine the order of the tour as it hops mini-segments
+		tour_order = []
+		curr_idx = 0
+
+		# 	step1: add left edge of chess board, from upper left down to lower left
+		for i in range(intervals):
+			tour_order += [i*intervals]
+
+		#	step2: add bottom edge of chess board, from left to right including lower right corner
+		curr_idx = intervals * (intervals-1)
+		for i in range(intervals-1):
+			curr_idx += 1
+			tour_order += [curr_idx]
+
+		curr_idx -= intervals
+
+		#	step3: until there is only one column not yet added (adjacent to left edge), 
+		#		continue this pattern adding columns one at-a-time moving left:
+		#		add one column moving up from the bottom; add column moving down from top
+		for loop in range(intervals/2 - 1):
+			tour_order += [curr_idx]
+			for i in range(intervals-2):
+				curr_idx -= intervals
+				tour_order += [curr_idx]
+
+			curr_idx -= 1
+			tour_order += [curr_idx]
+			for i in range(intervals-2):
+				curr_idx += intervals
+				tour_order += [curr_idx]
+
+			curr_idx -= 1
+			#print curr_idx, tour_order
+
+		#	step4: add final column (adjacent to left edge) moving up.  
+		#	***Post-condition: Chessboard covered.
 		tour_order += [curr_idx]
 		for i in range(intervals-2):
 			curr_idx -= intervals
 			tour_order += [curr_idx]
 
-		curr_idx -= 1
-		tour_order += [curr_idx]
-		for i in range(intervals-2):
-			curr_idx += intervals
-			tour_order += [curr_idx]
+		# tour_order completed - optional output:
+		#print tour_order
 
-		curr_idx -= 1
-		print curr_idx, tour_order
+		"""
+		#------example tour order on 10x10 chessboard (VISUAL REFERENCE ONLY)---------
+		# defines the order city arrays per square are combined for the initial tour
+		tour_order = [0,10,20,30,40,50,60,70,80,90]	<-- left edge of chessboard
+		tour_order = [91,92,93,94,95,96,97,98,99]	<-- bottom edge of chessboard
+		tour_order += [89,79,69,59,49,39,29,19,9]	<-- right edge of chessboard
+		tour_order += [8,18,28,38,48,58,68,78,88]	<-- down a column to the left
+		tour_order += [87,77,67,57,47,37,27,17,7]	<-- up a column to the left
+		tour_order += [6,16,26,36,46,56,66,76,86]	<-- down a column to the left
+		tour_order += [85,75,65,55,45,35,25,15,5]	<-- up a column to the left
+		tour_order += [4,14,24,34,44,54,64,74,84]
+		tour_order += [83,73,63,53,43,33,23,13,3]
+		tour_order += [2,12,22,32,42,52,62,72,82]
+		tour_order += [81,71,61,51,41,31,21,11,1]
+		"""
 
-	tour_order += [curr_idx]
-	for i in range(intervals-2):
-		curr_idx -= intervals
-		tour_order += [curr_idx]
+		# form the initial tour by stringing the chessboard squares together
+		visited = []
+		for i in range(len(tour_order)):
+			visited += mini_vis[tour_order[i]]
 
-	"""
-	tour_order = [0,10,20,30,40,50,60,70,80,90,91,92,93,94,95,96,97,98,99]
-	tour_order += [89,79,69,59,49,39,29,19,9]
-	tour_order += [8,18,28,38,48,58,68,78,88]
-	tour_order += [87,77,67,57,47,37,27,17,7]
-	tour_order += [6,16,26,36,46,56,66,76,86]
-	tour_order += [85,75,65,55,45,35,25,15,5]
-	tour_order += [4,14,24,34,44,54,64,74,84]
-	tour_order += [83,73,63,53,43,33,23,13,3]
-	tour_order += [2,12,22,32,42,52,62,72,82]
-	tour_order += [81,71,61,51,41,31,21,11,1]
-	"""
-	print tour_order
+		# output initial tour number of cities and tour length
+		tour_distance_check()
+		#print visited		#optional output
 
-	# optimize the mini-arrays
-	for i in range(intervals):
-		for j in range(intervals):
-			if (len(mini_vis[i]) > 3):
-				visited = mini_vis[i*intervals + j]
-				print i, j, len(mini_vis[i*intervals + j]), visited
-				optimize_tour()
-				mini_vis[i*intervals + j] = visited
+		# optimize tour length by cycling through a number of 2-opt swaps and array reversals
+		optimize_tour()
+		tour_distance_check()
+		#tour_distance_check_detail()	#optional output
 
-	visited = []
-	for i in range(len(tour_order)):
-		visited += mini_vis[tour_order[i]]
+		# record the current best tour
+		if (tourLength < bestLength):
+			bestLength = tourLength
+			bestTour = visited
 
-	print visited
-
-	"""
-	#go on a tour {note: at this stage, starting city 15 is optimal for sample1; city 165 is optimal for sample2}
-	if (startCity > cityCount):
-		startCity = 0
-	tourCity = startCity
-	visited.append(tourCity)
-	for c in range(cityCount - 1):
-		tourCity = find_short_path(tourCity)
-		visited.append(tourCity)
-	"""
-
-	#-----added by Rittie----------------------------------------------
-	#for x in range(cityCount):
-	#	print cityList[x][0], cityList[x][1], cityList[x][2]
-
-	#tour_distance_check_detail()
-	optimize_tour()
+# < OUTPUT RESULTS > ------------------------------------------------
+	visited = bestTour
+	
+	print "\nFINAL RESULT:"	
 	tour_distance_check()
-	#------------------------------------------------------------------
 
 	# write output to file
 	output()
@@ -318,7 +345,7 @@ def main(argv):
 	global filename
 	
 	# Register signal handler
-    signal.signal(signal.SIGTERM, sig_term)
+	signal.signal(signal.SIGTERM, sig_term)
 	
 	opts, args = getopt.getopt(argv, "hf:", ["filename="])	
 	
