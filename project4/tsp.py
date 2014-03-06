@@ -21,6 +21,7 @@ startCity = 15
 # The signal handler. On receiving sigterm, it writes
 # the latest result to the file.
 def sig_term(num, frame):
+	print "SIG-TERMINATED OUTPUT >>", tour_distance_check()
 	output()
 
 #function to calculate the Euclidean distance between two cities
