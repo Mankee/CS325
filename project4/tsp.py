@@ -219,6 +219,12 @@ def find_tour():
 	elif (cityCount < 1000):
 		intervals_first = 8
 		intervals_last = 52
+	elif (cityCount < 1500):
+		intervals_first = 8
+		intervals_last = 42
+	elif (cityCount < 3000):
+		intervals_first = 30
+		intervals_last = 42
 
 	# execute specified number of runs; cover range of chessboard dimensions, if applicable
 	for intervals in range(intervals_first, intervals_last, 2):
