@@ -20,7 +20,7 @@ startCity = 15
 
 # The signal handler. On receiving sigterm, it writes
 # the latest result to the file.
-def sig_term():
+def sig_term(num, frame):
 	output()
 
 #function to calculate the Euclidean distance between two cities
@@ -31,23 +31,6 @@ def calc_dist(x1,y1,x2,y2):
 		#round to the nearest integer. 
 		#For 0.1, put a one, then for 0.01 put 2, etc. negative values work in the other direction
 		return round(math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)),0)
-
-# function to build the initial sub-optimal tour
-def find_short_path(fromCity):
-	global cityList
-	global visited
-	global cityCount
-	minDist = 1000000
-	tourCity = 0
-	
-	for toCity in range(cityCount):
-		if (toCity not in set(visited)):
-			thisDist = calc_dist(cityList[fromCity][0], cityList[fromCity][1], cityList[toCity][0], cityList[toCity][1])
-			if (thisDist > 0 and thisDist < minDist):
-				minDist = thisDist
-				tourCity = toCity
-	
-	return tourCity
 
 # function to output the visited tour file
 def output():
