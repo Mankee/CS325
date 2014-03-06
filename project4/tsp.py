@@ -123,18 +123,18 @@ def tour_distance_check_detail():
 	print "\n#cities:", len(visited), "Length:", tourLength
 
 	# first city - this is the tour starting point
-	print 0, cityList[visited[0]][0], cityList[visited[0]][1], cityList[visited[0]][2]
+	print 0, cityList[visited[0]][0], cityList[visited[0]][1]
 
 	# distance from starting city to all other cities
 	for x in range(1, len(visited)):
-		thisDistance = calc_dist(cityList[visited[x-1]][1], cityList[visited[x-1]][2], cityList[visited[x]][1], cityList[visited[x]][2])
+		thisDistance = calc_dist(cityList[visited[x-1]][0], cityList[visited[x-1]][1], cityList[visited[x]][0], cityList[visited[x]][1])
 		cumDistance += thisDistance
-		print x, cityList[visited[x]][0], cityList[visited[x]][1], cityList[visited[x]][2], "dist:", thisDistance, "cum dist:", cumDistance
+		print x, cityList[visited[x]][0], cityList[visited[x]][1], "dist:", thisDistance, "cum dist:", cumDistance
 
 	# distance back to first city
-	thisDistance = calc_dist(cityList[visited[x]][1], cityList[visited[x]][2], cityList[visited[0]][1], cityList[visited[0]][2])
+	thisDistance = calc_dist(cityList[visited[x]][0], cityList[visited[x]][1], cityList[visited[0]][0], cityList[visited[0]][1])
 	cumDistance += thisDistance
-	print 0, cityList[visited[0]][0], cityList[visited[0]][1], cityList[visited[0]][2], "dist:", thisDistance, "cum dist:", cumDistance
+	print 0, cityList[visited[0]][0], cityList[visited[0]][1], "dist:", thisDistance, "cum dist:", cumDistance
 
 	print "#cities:", len(visited), "Length:", cumDistance
 	tourLength = cumDistance
