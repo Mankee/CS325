@@ -11,16 +11,26 @@
 
 import sys, getopt, math, signal, atexit, time
 
+bestTour = []
+bestLength = 1000000000
 cityList = []
 cityCount = 0
-visited = []
 filename = ''
-tourLength = 0
 startCity = 15
+tourLength = 0
+visited = []
 
 # The signal handler. On receiving sigterm, it writes
 # the latest result to the file.
 def sig_term(num, frame):
+	global bestTour
+	global bestLength
+	global visited
+	global tourLength
+	
+	if (bestLength < tourLength):
+		visited = bestTour
+	
 	print "SIG-TERMINATED OUTPUT >>", tour_distance_check()
 	output()
 
@@ -162,7 +172,8 @@ def find_tour():
 	global visited
 	global tourLength
 	global startCity
-	fout = 0	# no longer needed
+	global bestTour
+	global bestLength
 	distance = 0
 	tourCity = 0
 
@@ -176,10 +187,6 @@ def find_tour():
 	x_idx = 0
 	y_idx = 0
 	intervals = 0	# chessboard squares per side of (intervals x intervals) chessboard
-
-	# variables to hold the current best solution during run time
-	bestLength = 1000000000
-	bestTour = []	
 
 	# initialize cityList array
 	with open(filename) as f:
