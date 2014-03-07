@@ -28,6 +28,8 @@ def sig_term(num, frame):
 	global visited
 	global tourLength
 	
+	tour_distance_check()	#updates tour length final time before comparing to bestTour
+	
 	if (bestLength < tourLength):
 		visited = bestTour
 	
