@@ -203,8 +203,8 @@ def find_tour():
 # < Run time section > ------------------------------------------------
 
 	# adjust starting interval number (default = 100) and define multi-run loop parameters
-	intervals_first = 100
-	intervals_last = 102
+	intervals_first = 112
+	intervals_last = 112
 	if (cityCount < 100):
 		intervals_first = 2
 		intervals_last = 102
@@ -220,6 +220,98 @@ def find_tour():
 	elif (cityCount < 3000):
 		intervals_first = 30
 		intervals_last = 42
+
+	"""
+	# find lowest initial tour interval
+	low_init_tour = 1000000000
+	for intervals in range(112, 132, 2):
+		print "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHESSBOARD", intervals, "x", intervals, ">>>>>>>>>>"
+		# declare mini-arrays for cities located in each chessboard square 
+		mini_vis = [[0 for x in xrange(intervals*intervals)] for x in xrange(intervals*intervals)]
+
+		# get x and y max and min
+		for i in range(cityCount):
+			if (cityList[i][0] > x_max):
+				x_max = cityList[i][0]
+			elif (cityList[i][0] < x_min):
+				x_min = cityList[i][0]
+
+			if (cityList[i][1] > y_max):
+				y_max = cityList[i][1]
+			elif (cityList[i][1]) < y_min:
+				y_min = cityList[i][1]
+
+		# define dimensions of chessboard squares
+		x_step = (x_max - x_min)/intervals + 1
+		y_step = (y_max - y_min)/intervals + 1
+	
+		for i in range(intervals):
+			for j in range(intervals):
+				mini_vis[i*intervals + j] = []
+
+		for i in range(cityCount):
+			x_idx = (cityList[i][0] - x_min) / x_step
+			y_idx = (cityList[i][1] - y_min) / y_step
+			mini_vis[x_idx*intervals + y_idx].append(i)
+
+		# Apply Chessboard tour algorithm to determine the order of the tour as it hops mini-segments
+		tour_order = []
+		curr_idx = 0
+
+		# 	step1: add left edge of chess board, from upper left down to lower left
+		for i in range(intervals):
+			tour_order += [i*intervals]
+
+		#	step2: add bottom edge of chess board, from left to right including lower right corner
+		curr_idx = intervals * (intervals-1)
+		for i in range(intervals-1):
+			curr_idx += 1
+			tour_order += [curr_idx]
+
+		curr_idx -= intervals
+
+		#	step3: add right edge of chess board, from bottom to top including top right corner
+		tour_order += [curr_idx]
+		for i in range(intervals-2):
+			curr_idx -= intervals
+			tour_order += [curr_idx]
+
+		#	step4: while not adjacent to left edge, come in 2 columns at a time moving left
+		#		add one column moving down from top; add one column moving up from bottom
+
+		for loop in range(intervals/2 - 1):
+			curr_idx -= 1
+			tour_order += [curr_idx]
+			for i in range(intervals-2):
+				curr_idx += intervals
+				tour_order += [curr_idx]
+
+			curr_idx -= 1
+			tour_order += [curr_idx]
+			for i in range(intervals-2):
+				curr_idx -= intervals
+				tour_order += [curr_idx]
+		
+		orig_tour_order = tour_order
+
+		# tour_order completed - optional output:
+		#print tour_order
+
+		# form the initial tour by stringing the chessboard squares together
+		visited = []
+		for i in range(len(tour_order)):
+			visited += mini_vis[tour_order[i]]
+
+		# output initial tour number of cities and tour length
+		tour_distance_check()
+
+		if (tourLength < low_init_tour):
+			low_init_tour = tourLength
+			low_interval = intervals
+
+	intervals_first = low_interval
+	intervals_last = low_interval
+	"""
 
 	# execute specified number of runs; cover range of chessboard dimensions, if applicable
 	for intervals in range(intervals_first, intervals_last, 2):
