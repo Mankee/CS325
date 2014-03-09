@@ -349,7 +349,7 @@ def find_tour():
 							temp_tour[i*intervals + j] = tour_order[(intervals-i-1)*intervals + j] 
 						# flip#3: flip tour_order diagnally
 						else:
-							temp_tour[i*intervals + j] = tour_order[(intervals-i-1) + (intervals-j-1)*intervals] 
+							temp_tour[i*intervals + j] = tour_order[i + j*intervals] 
 				tour_order = temp_tour
 
 				# form the initial tour by stringing the chessboard squares together

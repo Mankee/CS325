@@ -204,7 +204,7 @@ def find_tour():
 
 	# adjust starting interval number (default = 100) and define multi-run loop parameters
 	intervals_first = 100
-	intervals_last = 102
+	intervals_last = 72
 	if (cityCount < 100):
 		intervals_first = 2
 		intervals_last = 102
@@ -349,7 +349,7 @@ def find_tour():
 							temp_tour[i*intervals + j] = tour_order[(intervals-i-1)*intervals + j] 
 						# flip#3: flip tour_order diagnally
 						else:
-							temp_tour[i*intervals + j] = tour_order[(intervals-i-1) + (intervals-j-1)*intervals] 
+							temp_tour[i*intervals + j] = tour_order[i + j*intervals] 
 				tour_order = temp_tour
 
 				# form the initial tour by stringing the chessboard squares together
