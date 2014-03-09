@@ -204,7 +204,7 @@ def find_tour():
 
 	# adjust starting interval number (default = 100) and define multi-run loop parameters
 	intervals_first = 100
-	intervals_last = 72
+	intervals_last = 102
 	if (cityCount < 100):
 		intervals_first = 2
 		intervals_last = 102
