@@ -28,8 +28,6 @@ def sig_term(num, frame):
 	global visited
 	global tourLength
 	
-	tour_distance_check()	#updates tour length final time before comparing to bestTour
-	
 	if (bestLength < tourLength):
 		visited = bestTour
 	
@@ -268,15 +266,16 @@ def find_tour():
 
 		curr_idx -= intervals
 
-		#	step3: until there is only one column not yet added (adjacent to left edge), 
-		#		continue this pattern adding columns one at-a-time moving left:
-		#		add one column moving up from the bottom; add column moving down from top
-		for loop in range(intervals/2 - 1):
+		#	step3: add right edge of chess board, from bottom to top including top right corner
+		tour_order += [curr_idx]
+		for i in range(intervals-2):
+			curr_idx -= intervals
 			tour_order += [curr_idx]
-			for i in range(intervals-2):
-				curr_idx -= intervals
-				tour_order += [curr_idx]
 
+		#	step4: while not adjacent to left edge, come in 2 columns at a time moving left
+		#		add one column moving down from top; add one column moving up from bottom
+
+		for loop in range(intervals/2 - 1):
 			curr_idx -= 1
 			tour_order += [curr_idx]
 			for i in range(intervals-2):
@@ -284,14 +283,10 @@ def find_tour():
 				tour_order += [curr_idx]
 
 			curr_idx -= 1
-			#print curr_idx, tour_order
-
-		#	step4: add final column (adjacent to left edge) moving up.  
-		#	***Post-condition: Chessboard covered.
-		tour_order += [curr_idx]
-		for i in range(intervals-2):
-			curr_idx -= intervals
 			tour_order += [curr_idx]
+			for i in range(intervals-2):
+				curr_idx -= intervals
+				tour_order += [curr_idx]
 
 		# tour_order completed - optional output:
 		#print tour_order
