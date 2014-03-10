@@ -70,8 +70,9 @@ def optimize_tour():
 	prev_tour_length = 0
 
 	for cycle in range(30):
-		if (tour_size == cityCount):
-			print "------------------------- CYCLE", cycle, "------------------------------"
+		#if (tour_size == cityCount):
+		#	print "------------------------- CYCLE", cycle, "------------------------------"
+		print "------------------------- CYCLE", cycle, "------------------------------"
 		visited.reverse()
 		for i in range(2, tour_size-1):
 			if (i % 250 == 0):
@@ -80,11 +81,11 @@ def optimize_tour():
 			for j in range(i, tour_size-1):
 				opt_swap(visited[i-2], visited[i-1], visited[j], visited[j+1])
 
-		if (tour_size == cityCount):
-			tour_distance_check()
-			if (tourLength == prev_tour_length):
-				break
-			prev_tour_length = tourLength
+		#if (tour_size == cityCount):
+		tour_distance_check()
+		if (tourLength == prev_tour_length):
+			break
+		prev_tour_length = tourLength
 
 # calculates the tour length given the current visited[] array.  Outputs city count and tour length.
 def tour_distance_check():
@@ -163,6 +164,49 @@ def opt_swap(A, B, C, D):
 
 		#tour_distance_check()
 
+# greedy tour
+def get_greedy_tour():
+	global visited
+	global cityList
+	global cityCount
+	global startCity
+	currCity = startCity
+	thisDist = 0
+	bestDist = 0
+	bestCity = 0
+
+	if (startCity >= cityCount):
+		startCity = 0
+
+	notVisited = []
+	for i in range(cityCount):
+		notVisited += [i]		
+	visited = []
+
+	# initiate the tour with first city
+	notVisited.remove(startCity)
+	visited.append(startCity)
+
+	while (len(visited) < cityCount):
+
+		# find next city to add
+		bestDist = 999999999
+		for i in range(len(notVisited)):
+			x1 = cityList[currCity][0]
+			y1 = cityList[currCity][1]
+			x2 = cityList[notVisited[i]][0]
+			y2 = cityList[notVisited[i]][1]
+			thisDist = calc_dist(x1,y1,x2,y2)
+			if (thisDist < bestDist):
+				bestDist = thisDist
+				bestCity = notVisited[i]
+
+		notVisited.remove(bestCity)
+		visited.append(bestCity)
+		currCity = bestCity
+
+	print "Initial GREEDY TOUR:", tour_distance_check()
+
 # procedure to parse the input file, initialize the visited array, and optimize the tour
 def find_tour():
 
@@ -180,6 +224,7 @@ def find_tour():
 	global rotate
 	distance = 0
 	tourCity = 0
+	bestInterval = 0
 
 	# variables to characterize city coordinate ranges
 	x_max = 0
@@ -203,115 +248,23 @@ def find_tour():
 # < Run time section > ------------------------------------------------
 
 	# adjust starting interval number (default = 100) and define multi-run loop parameters
-	intervals_first = 112
-	intervals_last = 112
+	intervals_first = 100
+	intervals_last = 102
 	if (cityCount < 100):
 		intervals_first = 2
-		intervals_last = 102
+		intervals_last = 82
 	elif (cityCount < 300):
 		intervals_first = 2
-		intervals_last = 102
-	elif (cityCount < 1000):
-		intervals_first = 8
 		intervals_last = 52
+	elif (cityCount < 1000):
+		intervals_first = 2
+		intervals_last = 62
 	elif (cityCount < 1500):
-		intervals_first = 8
-		intervals_last = 42
+		intervals_first = 2
+		intervals_last = 62
 	elif (cityCount < 3000):
-		intervals_first = 30
-		intervals_last = 42
-
-	"""
-	# find lowest initial tour interval
-	low_init_tour = 1000000000
-	for intervals in range(112, 132, 2):
-		print "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHESSBOARD", intervals, "x", intervals, ">>>>>>>>>>"
-		# declare mini-arrays for cities located in each chessboard square 
-		mini_vis = [[0 for x in xrange(intervals*intervals)] for x in xrange(intervals*intervals)]
-
-		# get x and y max and min
-		for i in range(cityCount):
-			if (cityList[i][0] > x_max):
-				x_max = cityList[i][0]
-			elif (cityList[i][0] < x_min):
-				x_min = cityList[i][0]
-
-			if (cityList[i][1] > y_max):
-				y_max = cityList[i][1]
-			elif (cityList[i][1]) < y_min:
-				y_min = cityList[i][1]
-
-		# define dimensions of chessboard squares
-		x_step = (x_max - x_min)/intervals + 1
-		y_step = (y_max - y_min)/intervals + 1
-	
-		for i in range(intervals):
-			for j in range(intervals):
-				mini_vis[i*intervals + j] = []
-
-		for i in range(cityCount):
-			x_idx = (cityList[i][0] - x_min) / x_step
-			y_idx = (cityList[i][1] - y_min) / y_step
-			mini_vis[x_idx*intervals + y_idx].append(i)
-
-		# Apply Chessboard tour algorithm to determine the order of the tour as it hops mini-segments
-		tour_order = []
-		curr_idx = 0
-
-		# 	step1: add left edge of chess board, from upper left down to lower left
-		for i in range(intervals):
-			tour_order += [i*intervals]
-
-		#	step2: add bottom edge of chess board, from left to right including lower right corner
-		curr_idx = intervals * (intervals-1)
-		for i in range(intervals-1):
-			curr_idx += 1
-			tour_order += [curr_idx]
-
-		curr_idx -= intervals
-
-		#	step3: add right edge of chess board, from bottom to top including top right corner
-		tour_order += [curr_idx]
-		for i in range(intervals-2):
-			curr_idx -= intervals
-			tour_order += [curr_idx]
-
-		#	step4: while not adjacent to left edge, come in 2 columns at a time moving left
-		#		add one column moving down from top; add one column moving up from bottom
-
-		for loop in range(intervals/2 - 1):
-			curr_idx -= 1
-			tour_order += [curr_idx]
-			for i in range(intervals-2):
-				curr_idx += intervals
-				tour_order += [curr_idx]
-
-			curr_idx -= 1
-			tour_order += [curr_idx]
-			for i in range(intervals-2):
-				curr_idx -= intervals
-				tour_order += [curr_idx]
-		
-		orig_tour_order = tour_order
-
-		# tour_order completed - optional output:
-		#print tour_order
-
-		# form the initial tour by stringing the chessboard squares together
-		visited = []
-		for i in range(len(tour_order)):
-			visited += mini_vis[tour_order[i]]
-
-		# output initial tour number of cities and tour length
-		tour_distance_check()
-
-		if (tourLength < low_init_tour):
-			low_init_tour = tourLength
-			low_interval = intervals
-
-	intervals_first = low_interval
-	intervals_last = low_interval
-	"""
+		intervals_first = 2
+		intervals_last = 62
 
 	# execute specified number of runs; cover range of chessboard dimensions, if applicable
 	for intervals in range(intervals_first, intervals_last, 2):
@@ -410,6 +363,7 @@ def find_tour():
 		visited = []
 		for i in range(len(tour_order)):
 			visited += mini_vis[tour_order[i]]
+			optimize_tour()
 
 		# output initial tour number of cities and tour length
 		tour_distance_check()
@@ -424,6 +378,9 @@ def find_tour():
 		if (tourLength < bestLength):
 			bestLength = tourLength
 			bestTour = visited
+			bestInterval = intervals
+
+		print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval,")"
 
 		# ----------- run with flips -------------------
 		if (flip):
@@ -462,7 +419,10 @@ def find_tour():
 				if (tourLength < bestLength):
 					bestLength = tourLength
 					bestTour = visited
+					bestInterval = intervals
 		
+				print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval, ")"
+
 		# ----------- run with rotations -------------------
 		if (rotate):
 			for rotatenum in range(3):
@@ -500,14 +460,31 @@ def find_tour():
 				if (tourLength < bestLength):
 					bestLength = tourLength
 					bestTour = visited
+					bestInterval = intervals
 		
+				print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval, ")"
 
+		"""
+		# ----------- run with greedy algorithm -------------------
+		for i in range(cityCount):
+			startCity = i
+			get_greedy_tour()
+			# optimize tour length by cycling through a number of 2-opt swaps and array reversals
+			optimize_tour()
+			print "startCity", i, tour_distance_check()
+
+			# record the current best tour
+			if (tourLength < bestLength):
+				bestLength = tourLength
+				bestTour = visited
+		"""
 
 # < OUTPUT RESULTS > ------------------------------------------------
 	visited = bestTour
 	
-	print "\nFINAL RESULT:"	
+	print "\nFINAL RESULT: from BEST INTERVAL", bestInterval	
 	tour_distance_check()
+	
 
 	# write output to file
 	output()

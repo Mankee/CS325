@@ -180,6 +180,7 @@ def find_tour():
 	global rotate
 	distance = 0
 	tourCity = 0
+	bestInterval = 0
 
 	# variables to characterize city coordinate ranges
 	x_max = 0
@@ -207,19 +208,19 @@ def find_tour():
 	intervals_last = 102
 	if (cityCount < 100):
 		intervals_first = 2
-		intervals_last = 102
+		intervals_last = 82
 	elif (cityCount < 300):
 		intervals_first = 2
-		intervals_last = 102
+		intervals_last = 82
 	elif (cityCount < 1000):
-		intervals_first = 8
-		intervals_last = 52
+		intervals_first = 2
+		intervals_last = 62
 	elif (cityCount < 1500):
-		intervals_first = 8
-		intervals_last = 42
+		intervals_first = 2
+		intervals_last = 62
 	elif (cityCount < 3000):
-		intervals_first = 30
-		intervals_last = 42
+		intervals_first = 2
+		intervals_last = 62
 
 	# execute specified number of runs; cover range of chessboard dimensions, if applicable
 	for intervals in range(intervals_first, intervals_last, 2):
@@ -332,6 +333,9 @@ def find_tour():
 		if (tourLength < bestLength):
 			bestLength = tourLength
 			bestTour = visited
+			bestInterval = intervals
+
+		print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval,")"
 
 		# ----------- run with flips -------------------
 		if (flip):
@@ -370,7 +374,10 @@ def find_tour():
 				if (tourLength < bestLength):
 					bestLength = tourLength
 					bestTour = visited
+					bestInterval = intervals
 		
+				print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval, ")"
+
 		# ----------- run with rotations -------------------
 		if (rotate):
 			for rotatenum in range(3):
@@ -408,14 +415,17 @@ def find_tour():
 				if (tourLength < bestLength):
 					bestLength = tourLength
 					bestTour = visited
+					bestInterval = intervals
 		
+				print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval, ")"
 
 
 # < OUTPUT RESULTS > ------------------------------------------------
 	visited = bestTour
 	
-	print "\nFINAL RESULT:"	
+	print "\nFINAL RESULT: from BEST INTERVAL", bestInterval	
 	tour_distance_check()
+	
 
 	# write output to file
 	output()

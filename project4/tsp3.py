@@ -70,8 +70,9 @@ def optimize_tour():
 	prev_tour_length = 0
 
 	for cycle in range(30):
-		if (tour_size == cityCount):
-			print "------------------------- CYCLE", cycle, "------------------------------"
+		#if (tour_size == cityCount):
+		#	print "------------------------- CYCLE", cycle, "------------------------------"
+		print "------------------------- CYCLE", cycle, "------------------------------"
 		visited.reverse()
 		for i in range(2, tour_size-1):
 			if (i % 250 == 0):
@@ -80,11 +81,11 @@ def optimize_tour():
 			for j in range(i, tour_size-1):
 				opt_swap(visited[i-2], visited[i-1], visited[j], visited[j+1])
 
-		if (tour_size == cityCount):
-			tour_distance_check()
-			if (tourLength == prev_tour_length):
-				break
-			prev_tour_length = tourLength
+		#if (tour_size == cityCount):
+		tour_distance_check()
+		if (tourLength == prev_tour_length):
+			break
+		prev_tour_length = tourLength
 
 # calculates the tour length given the current visited[] array.  Outputs city count and tour length.
 def tour_distance_check():
@@ -163,6 +164,49 @@ def opt_swap(A, B, C, D):
 
 		#tour_distance_check()
 
+# greedy tour
+def get_greedy_tour():
+	global visited
+	global cityList
+	global cityCount
+	global startCity
+	currCity = startCity
+	thisDist = 0
+	bestDist = 0
+	bestCity = 0
+
+	if (startCity >= cityCount):
+		startCity = 0
+
+	notVisited = []
+	for i in range(cityCount):
+		notVisited += [i]		
+	visited = []
+
+	# initiate the tour with first city
+	notVisited.remove(startCity)
+	visited.append(startCity)
+
+	while (len(visited) < cityCount):
+
+		# find next city to add
+		bestDist = 999999999
+		for i in range(len(notVisited)):
+			x1 = cityList[currCity][0]
+			y1 = cityList[currCity][1]
+			x2 = cityList[notVisited[i]][0]
+			y2 = cityList[notVisited[i]][1]
+			thisDist = calc_dist(x1,y1,x2,y2)
+			if (thisDist < bestDist):
+				bestDist = thisDist
+				bestCity = notVisited[i]
+
+		notVisited.remove(bestCity)
+		visited.append(bestCity)
+		currCity = bestCity
+
+	print "Initial GREEDY TOUR:", tour_distance_check()
+
 # procedure to parse the input file, initialize the visited array, and optimize the tour
 def find_tour():
 
@@ -211,7 +255,7 @@ def find_tour():
 		intervals_last = 82
 	elif (cityCount < 300):
 		intervals_first = 2
-		intervals_last = 82
+		intervals_last = 52
 	elif (cityCount < 1000):
 		intervals_first = 2
 		intervals_last = 62
@@ -219,8 +263,8 @@ def find_tour():
 		intervals_first = 2
 		intervals_last = 62
 	elif (cityCount < 3000):
-		intervals_first = 22
-		intervals_last = 24
+		intervals_first = 2
+		intervals_last = 62
 
 	# execute specified number of runs; cover range of chessboard dimensions, if applicable
 	for intervals in range(intervals_first, intervals_last, 2):
@@ -419,6 +463,20 @@ def find_tour():
 		
 				print "(BEST SO FAR:", bestLength, "FROM INTERVAL:", bestInterval, ")"
 
+		"""
+		# ----------- run with greedy algorithm -------------------
+		for i in range(cityCount):
+			startCity = i
+			get_greedy_tour()
+			# optimize tour length by cycling through a number of 2-opt swaps and array reversals
+			optimize_tour()
+			print "startCity", i, tour_distance_check()
+
+			# record the current best tour
+			if (tourLength < bestLength):
+				bestLength = tourLength
+				bestTour = visited
+		"""
 
 # < OUTPUT RESULTS > ------------------------------------------------
 	visited = bestTour
