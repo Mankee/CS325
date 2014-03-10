@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Project: #4 TSP
 #
 # Team RADZ:
@@ -8,8 +10,6 @@
 # 
 # CS 325-400
 # Winter 2014
-
-#!/usr/bin/python
 
 import sys, getopt, math, signal, atexit, time
 
